@@ -85,7 +85,7 @@ function App() {
           onConnect={onConnect}
           fitView
         >
-          <MiniMap />
+          {/* <MiniMap /> */}
           <Background />
           <FlowControls />
         </ReactFlow>
