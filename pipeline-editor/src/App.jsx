@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import ReactFlow, {
   ReactFlowProvider,
   addEdge,
@@ -6,34 +6,48 @@ import ReactFlow, {
   Controls as FlowControls,
   useNodesState,
   useEdgesState,
-  MiniMap,
   useReactFlow,
-  BackgroundVariant
+  Handle,
+  Position,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import CustomNode from './components/CustomNode';
-import Controls from './components/Controls';
-import StatusBar from './components/StatusBar';
-import validateDag from './utils/validateDag';
-import applyAutoLayout from './utils/autoLayout';
+
+const CustomNode = ({ data }) => (
+  <div style={{ padding: 10, border: '1px solid #555', background: 'white', position: 'relative' }}>
+    <Handle type="target" position={Position.Left} />
+    {data.label}
+    <Handle type="source" position={Position.Right} />
+  </div>
+);
 
 const nodeTypes = { custom: CustomNode };
+
+const ControlsPanel = ({ onAddNode, onAutoLayout }) => (
+  <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 10 }}>
+    <button onClick={onAddNode}>Add Node</button>
+    <button onClick={onAutoLayout} style={{ marginLeft: 10 }}>Auto Layout</button>
+  </div>
+);
+
+function applyAutoLayout(nodes, edges) {
+  const spacingX = 200;
+  const spacingY = 100;
+  const layoutedNodes = nodes.map((node, index) => ({
+    ...node,
+    position: { x: index * spacingX, y: (index % 2) * spacingY + 100 }
+  }));
+  return { layoutedNodes, layoutedEdges: edges };
+}
 
 function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [isValidDag, setIsValidDag] = useState(false);
-  const [validationMsg, setValidationMsg] = useState('');
+  const { fitView } = useReactFlow();
 
-  const { project, fitView } = useReactFlow();
-
-  const onConnect = useCallback(
-    (params) => {
-      if (params.source === params.target) return;
-      setEdges((eds) => addEdge({ ...params, markerEnd: { type: 'arrow' } }, eds));
-    },
-    [setEdges]
-  );
+  const onConnect = useCallback((params) => {
+    if (params.source === params.target) return;
+    setEdges((eds) => addEdge({ ...params, markerEnd: { type: 'arrow' } }, eds));
+  }, [setEdges]);
 
   const addNode = () => {
     const label = prompt('Enter node label:');
@@ -47,13 +61,6 @@ function App() {
     setNodes((nds) => [...nds, newNode]);
   };
 
-  const handleDelete = useCallback((event) => {
-    if (event.key === 'Delete' || event.key === 'Backspace') {
-      setNodes((nds) => nds.filter((node) => !node.selected));
-      setEdges((eds) => eds.filter((edge) => !edge.selected));
-    }
-  }, []);
-
   const handleAutoLayout = () => {
     const { layoutedNodes, layoutedEdges } = applyAutoLayout(nodes, edges);
     setNodes([...layoutedNodes]);
@@ -61,22 +68,10 @@ function App() {
     fitView();
   };
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleDelete);
-    return () => window.removeEventListener('keydown', handleDelete);
-  }, [handleDelete]);
-
-  useEffect(() => {
-    const { valid, message } = validateDag(nodes, edges);
-    setIsValidDag(valid);
-    setValidationMsg(message);
-  }, [nodes, edges]);
-
   return (
     <ReactFlowProvider>
       <div style={{ height: '100vh', width: '100%' }}>
-        <Controls onAddNode={addNode} onAutoLayout={handleAutoLayout} />
-        <StatusBar valid={isValidDag} message={validationMsg} />
+        <ControlsPanel onAddNode={addNode} onAutoLayout={handleAutoLayout} />
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -86,8 +81,7 @@ function App() {
           onConnect={onConnect}
           fitView
         >
-          {/* <MiniMap /> */}
-          <Background  color="#FF0000" bgColor="#000000" variant={BackgroundVariant.Cross}/>
+          <Background />
           <FlowControls />
         </ReactFlow>
       </div>
