@@ -3,6 +3,7 @@
 ### 1. Clone the repo 
 
 ```bash
-npx create-vite@latest my-app --template react
-cd my-app
+cd pipeline-editor
+npm run install
+npm run dev 
 ```
