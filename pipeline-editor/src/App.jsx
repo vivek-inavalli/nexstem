@@ -9,7 +9,8 @@ import ReactFlow, {
   useReactFlow,
   Handle,
   Position,
-  BackgroundVariant
+  BackgroundVariant,
+  MiniMap
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -25,8 +26,20 @@ const nodeTypes = { custom: CustomNode };
 
 const ControlsPanel = ({ onAddNode, onAutoLayout }) => (
   <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 10 }}>
-    <button onClick={onAddNode}>Add Node</button>
-    <button onClick={onAutoLayout} style={{ marginLeft: 10 }}>Auto Layout</button>
+    <button
+  onClick={onAddNode}
+  className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+>
+  Add Node
+</button>
+
+<button
+  onClick={onAutoLayout}
+  className="ml-2 bg-emerald-500 text-white px-4 py-2 rounded hover:bg-emerald-600"
+>
+  Auto Layout
+</button>
+
   </div>
 );
 
@@ -84,6 +97,7 @@ function App() {
         >
           <Background variant={BackgroundVariant.Cross} color="#900C3F"/>
           <FlowControls />
+          <MiniMap/>
         </ReactFlow>
       </div>
     </ReactFlowProvider>
