@@ -9,6 +9,7 @@ import ReactFlow, {
   useReactFlow,
   Handle,
   Position,
+  BackgroundVariant
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -81,7 +82,7 @@ function App() {
           onConnect={onConnect}
           fitView
         >
-          <Background />
+          <Background variant={BackgroundVariant.Cross} color="#900C3F"/>
           <FlowControls />
         </ReactFlow>
       </div>
