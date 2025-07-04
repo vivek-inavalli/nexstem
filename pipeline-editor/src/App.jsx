@@ -8,6 +8,7 @@ import ReactFlow, {
   useEdgesState,
   MiniMap,
   useReactFlow,
+  BackgroundVariant
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CustomNode from './components/CustomNode';
@@ -86,7 +87,7 @@ function App() {
           fitView
         >
           {/* <MiniMap /> */}
-          <Background />
+          <Background  color="#FF0000" bgColor="#000000" variant={BackgroundVariant.Cross}/>
           <FlowControls />
         </ReactFlow>
       </div>
